@@ -17,3 +17,12 @@
 ./serial -n 2000 
 ./serial -n 4000 
 ./serial -n 8000  
+
+
+
+assign_bins_gpu <<< blks, NUM_THREADS >>> (d_particles, d_bins, d_counts, n, bs);
+clear_accel_gpu <<< blks, NUM_THREADS >>> (d_particles, n);
+int bin_blks = (bs*bs + NUM_THREADS -1) / NUM_THREADS;
+compute_forces_bin_gpu <<< bin_blks, NUM_THREADS >>> (d_particles, bs, d_bins,
+d_counts);
+move_gpu <<< blks, NUM_THREADS >>> (d_particles, n, size);
